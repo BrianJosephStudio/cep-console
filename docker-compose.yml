@@ -1,7 +1,7 @@
 version: '3.8'
 
 services:
-  fronternd:
+  frontend:
     container_name: cep-console
     build: ./app/cep-console
     working_dir: /app
@@ -16,6 +16,8 @@ services:
     working_dir: /app
     volumes:
       - console-app:/app/public
+    depends_on:
+      - frontend
   
 volumes:
   console-app:
