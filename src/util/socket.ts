@@ -1,9 +1,6 @@
 import { Server } from "socket.io";
 import http from "http";
 
-const socket_port = process.env.SOCKET_PORT
-if(!socket_port) throw new Error(`missing env: SOCKET_PORT`)
-
 export class IOSocket {
   static instance: IOSocket | undefined;
   public readonly io: Server;
