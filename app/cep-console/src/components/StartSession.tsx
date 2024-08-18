@@ -1,17 +1,14 @@
 import { Box, Button, Input, Typography } from "@mui/material";
-import DeleteIcon from "@mui/icons-material/Delete";
+import DeleteIcon from '@mui/icons-material/Delete';
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { v4 as uuid } from "uuid";
 import { SessionIdentifier } from "./Sessionidentifier";
 
 export const StartSession = () => {
-  const [randomSessionIdentifier, setRandomSessionidentifier] =
-    useState<string>("");
+  const [randomSessionIdentifier, setRandomSessionidentifier] = useState<string>("");
   const [sessionName, setSessionName] = useState<string>("");
-  const [savedSessions, setSavedSessions] = useState<
-    { name: string; identifier: string }[]
-  >([]);
+  const [savedSessions, setSavedSessions] = useState<{ name: string; identifier: string }[]>([]);
 
   const navigate = useNavigate();
 
@@ -33,11 +30,15 @@ export const StartSession = () => {
     return null;
   };
 
+  const deleteSession = (identifier: string) => {
+    const existingSessions = JSON.parse(getCookie("savedSessions") || "[]");
+    const updatedSessions = existingSessions.filter((session: any) => session.identifier !== identifier);
+    setCookie("savedSessions", JSON.stringify(updatedSessions), 365);
+    setSavedSessions(updatedSessions);
+  };
+
   const saveSession = () => {
-    const sessionData = {
-      name: sessionName,
-      identifier: randomSessionIdentifier,
-    };
+    const sessionData = { name: sessionName, identifier: randomSessionIdentifier };
     const existingSessions = JSON.parse(getCookie("savedSessions") || "[]");
     const updatedSessions = [...existingSessions, sessionData];
     setCookie("savedSessions", JSON.stringify(updatedSessions), 365); // Save for 1 year
@@ -78,7 +79,6 @@ export const StartSession = () => {
           alignContent: "center",
           justifyContent: "center",
           height: "100vh",
-          // width: "100vw",
           gap: "1rem",
         }}
       >
@@ -154,48 +154,54 @@ export const StartSession = () => {
           >
             {savedSessions.map((session, index) => (
               <Box
-                onClick={() => startSavedSession(session.identifier)}
-                component={"div"}
                 key={index}
+                component={"div"}
                 sx={{
                   display: "grid",
-                  width: "34rem",
-                  gridTemplateColumns: "2fr 12fr 2fr",
+                  width: '34rem',
+                  gridTemplateColumns: '2fr 12fr 2fr',
                   placeContent: "center",
-                  height: "3rem",
+                  height: '3rem',
                   backgroundColor: "black",
                   borderRadius: "3rem",
                   padding: "1rem",
                   cursor: "pointer",
-                  "&:hover": {
-                    backgroundColor: "#38a5ff",
-                  },
+                  border: 'solid 2px',
+                  borderColor: 'transparent',
+                  '&:hover': {
+                    borderColor: '#38a5ff'
+                  }
                 }}
               >
-                <Box
+                <Box 
+                  onClick={() => startSavedSession(session.identifier)}
                   sx={{
                     display: "flex",
                     flexDirection: "column",
-                    gridColumn: "2/3",
+                    gridColumn: '2/3'
                   }}
                 >
-                  <Typography sx={{ color: "white" }}>
-                    {session.name}
-                  </Typography>
-                  <Typography
-                    key={index}
-                    sx={{ color: "#24ffaf", fontSize: "0.8rem" }}
-                  >
+                  <Typography sx={{ color: "white" }}>{session.name}</Typography>
+                  <Typography key={index} sx={{ color: "#24ffaf", fontSize: '0.8rem' }}>
                     {session.identifier}
                   </Typography>
                 </Box>
                 <DeleteIcon
-                  sx={{
-                    "&:hover": {
-                      fill: "#ff3860",
-                    },
+                  titleAccess="Delete Session"
+                  onClick={(e) => {
+                    e.stopPropagation(); // Prevent click event from propagating to parent element
+                    deleteSession(session.identifier);
                   }}
-                ></DeleteIcon>
+                  sx={{
+                    gridColumn: '3/4',
+                    '&:hover': {
+                      fill: '#ff3860'
+                    },
+                    '&:hover ~ div': {
+                      backgroundColor: 'inherit' // Prevent background color change on parent hover
+                    }
+                  }}
+                />
               </Box>
             ))}
           </Box>
