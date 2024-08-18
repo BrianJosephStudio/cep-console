@@ -1,0 +1,21 @@
+version: '3.8'
+
+services:
+  fronternd:
+    container_name: cep-console
+    build: ./app/cep-console
+    working_dir: /app
+    volumes:
+      - console-app:/app/dist
+  server:
+    container_name: cep-console-server
+    build: .
+    ports:
+      - 6001:6001
+    restart: 'always'
+    working_dir: /app
+    volumes:
+      - console-app:/app/public
+  
+volumes:
+  console-app:
